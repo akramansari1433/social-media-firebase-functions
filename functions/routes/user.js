@@ -14,6 +14,10 @@ router.post("/signup", (req, res) => {
       handle: req.body.handle,
    };
 
+   if (newUser.password !== newUser.confirmPassword) {
+      return res.status(400).json({ password: "Password must be same." });
+   }
+
    const noImg = "no-img.png";
    let token, userId;
    //TODO validate
@@ -23,7 +27,7 @@ router.post("/signup", (req, res) => {
          if (doc.exists) {
             return res
                .status(400)
-               .json({ handle: "this handle is already taken" });
+               .json({ handle: "This handle is already taken." });
          } else {
             return auth.createUserWithEmailAndPassword(
                newUser.email,
@@ -52,7 +56,7 @@ router.post("/signup", (req, res) => {
       .catch((err) => {
          console.log(err);
          if (err.code === "auth/email-already-in-use") {
-            return res.status(400).json({ email: "email is already in use" });
+            return res.status(400).json({ email: "Email is already in use." });
          } else {
             return res
                .status(500)
@@ -79,7 +83,7 @@ router.post("/login", (req, res) => {
          console.log(err);
          return res
             .status(403)
-            .json({ general: "wrong credentials, please try again" });
+            .json({ general: "Wrong credentials, please try again." });
       });
 });
 
@@ -96,7 +100,7 @@ router.post("/image", FBAuth, (req, res) => {
    const busboy = new BusBoy({ headers: req.headers });
    busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
       if (mimetype !== "image/jpeg" && mimetype !== "image/png") {
-         return res.status(400).json({ error: "Wrong file type submitted" });
+         return res.status(400).json({ error: "Wrong file type submitted." });
       }
 
       const imageExtension =
@@ -180,7 +184,7 @@ router.get("/getAuthenticatedUser", FBAuth, (req, res) => {
                recipient: doc.data().recipient,
                sender: doc.data().sender,
                createdAt: doc.data().createdAt,
-               postID: doc.data().postID,
+               postId: doc.data().postId,
                type: doc.data().type,
                read: doc.data().read,
                notificationId: doc.id,
